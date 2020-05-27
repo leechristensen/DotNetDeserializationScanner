@@ -40,13 +40,31 @@ namespace DotNetDeserializationScanner
                 {
                     continue; // We don't have access to this directory, so skip it
                 }
+                catch (Exception e)
+                {
+                    Console.WriteLine($"Error getting directories for the directory {dir.FullName}: {e}");
+                }
 
-                foreach (var f in dir.GetFiles().Where(Pattern)) // "Pattern" is a function
+                IEnumerable<FileInfo> files = null;
+                try
+                {
+                    files = dir.GetFiles().Where(Pattern);
+                }
+                catch (Exception e)
+                {
+                    Console.WriteLine($"Error getting files for the directory {dir.FullName}: {e}");
+                }
+
+                if (files == null)
+                    continue;
+
+                foreach (var f in files) // "Pattern" is a function
                 {
                     totalCount++;
                     onProgress(totalCount);
                     yield return f;
                 }
+
             }
         }
 
